@@ -2,10 +2,8 @@ import os
 import discord
 import random
 
-from discord import utils
-from discord import channel
+import discord
 from discord.ext import commands
-from discord.abc import GuildChannel
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -14,6 +12,7 @@ GUILD = os.getenv('DISCORD_GUILD')
 
 
 bot = commands.Bot(command_prefix='?')
+
 
 @bot.command(name='create-channel')
 @commands.has_role(':)')
@@ -25,12 +24,10 @@ async def create_channel(ctx, channel_name='real-python'):
         await guild.create_text_channel(channel_name)
 
 
-
 @bot.event
 async def on_message(message):
     if 'fabian' in message.content.lower():
         await message.channel.send('Schnitte! :smirk: ')
-
 
 
 @bot.command(name = '99', help='this is a helper command')
@@ -39,7 +36,6 @@ async def test(ctx):
 
     response = random.choice(testquote)
     await ctx.send(response)
-
 
 
 @bot.event
