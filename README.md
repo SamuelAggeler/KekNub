@@ -1,2 +1,2 @@
 # KekNub
-This repository is dedicated to KekNub bot which is a discord bot written in python
+This repository is dedicated to KekNub a discord bot written in python
