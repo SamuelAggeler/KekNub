@@ -35,10 +35,10 @@ async def on_ready():
 async def random(ctx, *args):
     await ctx.send(rand.choice(args))
 
-
+#expects a name and then creates a textchannel, :) role is requiered to create a channel
 @bot.command()
 @commands.has_role(':)')
-async def create_channel(ctx, channel_name='testchannel1'):
+async def create_channel(ctx,channel_name):
     guild = ctx.guild
     existing_channel = discord.utils.get(guild.channels, name=channel_name)
     if not existing_channel:
