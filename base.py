@@ -3,6 +3,7 @@ import discord
 import random as rand
 import datetime
 import asyncio
+import sys
 
 from discord.utils import get
 from discord import utils
@@ -33,6 +34,14 @@ async def on_ready():
         f'{bot.user} is connected to the following guild:\n'
         f'{guild.name}(id: {guild.id})'
     )
+#restart command for the bot
+@bot.command()
+@commands.has_role(':)')
+async def restart(ctx):
+    await ctx.send("Bot will restart now")
+    bot.logout
+    bot.login
+    await ctx.send("Bot is back online")
  
 #takes arbitrary amount of arguments and returns a random one
 @bot.command(name = 'random', help='takes input and returns random choice')
@@ -99,7 +108,7 @@ async def ping(ctx, user1 : discord.Member, amount : int, message):
     for i in range(0, amount):
         await ctx.send(message + user1.mention)
 
-
+#fetch Profilepicture from User that is passed as argument
 @bot.command()
 async def pfp(ctx, user: discord.Member):
     pfp = user.avatar_url
