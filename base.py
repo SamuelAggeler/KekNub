@@ -3,8 +3,8 @@ import discord
 import random as rand
 import datetime
 import asyncio
-import utility
 
+from discord.utils import get
 from discord import utils
 from discord import channel
 from discord.ext import commands
@@ -99,5 +99,12 @@ async def ping(ctx, user1 : discord.Member, amount : int, message):
     for i in range(0, amount):
         await ctx.send(message + user1.mention)
 
+
+@bot.command()
+async def pfp(ctx, user: discord.Member):
+    pfp = user.avatar_url
+    embed = discord.Embed(title="Profilepicture ", description = "{}, current profilepicture".format(user.mention), color=ctx.author.color)
+    embed.set_image(url=(pfp))
+    await ctx.send(embed=embed)
 
 bot.run(TOKEN)
