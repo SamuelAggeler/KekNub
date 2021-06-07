@@ -4,6 +4,7 @@ import random as rand
 import datetime
 import asyncio
 import sys
+from discord.flags import Intents
 
 from discord.utils import get
 from discord import utils
@@ -22,7 +23,7 @@ GUILD = os.getenv('DISCORD_GUILD')
 
 
 
-
+Intents = discord.Intents.default()
 #initalize bot prefix
 bot = commands.Bot(command_prefix='?')
 
@@ -115,5 +116,17 @@ async def pfp(ctx, user: discord.Member):
     embed = discord.Embed(title="Profilepicture ", description = "{}, current profilepicture".format(user.mention), color=ctx.author.color)
     embed.set_image(url=(pfp))
     await ctx.send(embed=embed)
+
+@bot.command()
+async def create(ctx, GroupName):
+    user = ctx.message.author
+    await ctx.channel.send(user.mention + f" You succesfully created the group " + GroupName)
+
+
+@bot.command()
+async def join(ctx, groupname):
+
+    user = ctx.message.author
+    await ctx.channel.send(f" joined group " + groupname + user.mention)
 
 bot.run(TOKEN)
