@@ -4,6 +4,10 @@ import random as rand
 import datetime
 import asyncio
 import sys
+import json
+
+from discord.ext.commands.core import Group
+import utility
 from discord.flags import Intents
 
 from discord.utils import get
@@ -20,7 +24,7 @@ from dotenv import load_dotenv
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
-
+Groupdb = r"C:\Users\samue\Desktop\KekNub\Group.db"
 
 
 Intents = discord.Intents.default()
@@ -117,16 +121,45 @@ async def pfp(ctx, user: discord.Member):
     embed.set_image(url=(pfp))
     await ctx.send(embed=embed)
 
+
+
+
+
+
 @bot.command()
 async def create(ctx, GroupName):
+    conn = utility.create_connection(Groupdb)
+    sql_create_Group_table = """ CREATE TABLE IF NOT EXISTS """ + GroupName + """(
+                                        id integer PRIMARY KEY,
+                                        name text NOT NULL,
+                                        ); """
+
+    sql_create_tasks_table = """CREATE TABLE IF NOT EXISTS tasks (
+                                    id integer PRIMARY KEY,
+                                    name text NOT NULL,
+                                    priority integer,
+                                    status_id integer NOT NULL,
+                                    project_id integer NOT NULL,
+                                    begin_date text NOT NULL,
+                                    end_date text NOT NULL,
+                                    FOREIGN KEY (project_id) REFERENCES projects (id)
+                                );"""
+
+    if conn is not None:
+        utility.create_table(conn, sql_create_Group_table)
+    else:
+        print("couldnt create Table with name " + GroupName)
+    
     user = ctx.message.author
     await ctx.channel.send(user.mention + f" You succesfully created the group " + GroupName)
 
 
 @bot.command()
-async def join(ctx, groupname):
-
+async def join(ctx, GroupName):
     user = ctx.message.author
-    await ctx.channel.send(f" joined group " + groupname + user.mention)
+    conn = utility.create_connection(Groupdb)
+    with conn :
+        utility.create_group(conn, GroupName,ctx.message.author,)
+    await ctx.channel.send(f" joined group " + GroupName + user.mention)
 
 bot.run(TOKEN)
