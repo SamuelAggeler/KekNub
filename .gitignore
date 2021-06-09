@@ -3,3 +3,7 @@
 Group.db
 Groupmanagement.json
 __pycache__/utility.cpython-39.pyc
+Scripts
+__pycache__
+pics
+pyvenv.cfg
