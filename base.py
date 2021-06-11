@@ -170,7 +170,7 @@ async def pingGroup(ctx, GroupName):
         userstring = str(user)
         length = len(userstring)
         userstring_formated = userstring[1:length-2]
-        pinable = "<@" + userstring_formated + ">"
-        await ctx.channel.send(pinable)
+        pingable = "<@" + userstring_formated + ">"
+        await ctx.channel.send(pingable)
 
 bot.run(TOKEN)
