@@ -5,6 +5,9 @@ import datetime
 import asyncio
 import sys
 import json
+import sqlite3
+from sqlite3 import Error
+
 
 from discord.ext.commands.core import Group
 import utility
@@ -129,21 +132,9 @@ async def pfp(ctx, user: discord.Member):
 @bot.command()
 async def create(ctx, GroupName):
     conn = utility.create_connection(Groupdb)
-    sql_create_Group_table = """ CREATE TABLE IF NOT EXISTS """ + GroupName + """(
-                                        id integer PRIMARY KEY,
-                                        name text NOT NULL,
+    sql_create_Group_table = """ CREATE TABLE IF NOT EXISTS """ + GroupName + """ (
+                                        name text
                                         ); """
-
-    sql_create_tasks_table = """CREATE TABLE IF NOT EXISTS tasks (
-                                    id integer PRIMARY KEY,
-                                    name text NOT NULL,
-                                    priority integer,
-                                    status_id integer NOT NULL,
-                                    project_id integer NOT NULL,
-                                    begin_date text NOT NULL,
-                                    end_date text NOT NULL,
-                                    FOREIGN KEY (project_id) REFERENCES projects (id)
-                                );"""
 
     if conn is not None:
         utility.create_table(conn, sql_create_Group_table)
@@ -158,8 +149,25 @@ async def create(ctx, GroupName):
 async def join(ctx, GroupName):
     user = ctx.message.author
     conn = utility.create_connection(Groupdb)
-    with conn :
-        utility.create_group(conn, GroupName,ctx.message.author,)
+    with conn:
+        print("GroupName and user")
+        user_string = str(user)
+        print(user_string)
+        utility.join_group(conn, GroupName,user_string)
     await ctx.channel.send(f" joined group " + GroupName + user.mention)
+
+@bot.command()
+async def pingGroup(ctx, GroupName):
+    conn = utility.create_connection(Groupdb)
+    cur = conn.cursor()
+    sql = "SELECT * FROM " + GroupName
+    print(sql)
+    cur.execute(sql)
+    print("its working")
+    rows = cur.fetchall()
+    print("its working2")
+    for user in rows:
+        print(user)
+        await ctx.channel.send(user)
 
 bot.run(TOKEN)

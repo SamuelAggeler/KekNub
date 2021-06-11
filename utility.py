@@ -43,12 +43,16 @@ def create_db(db_file):
         if conn:
             conn.close()
 
-def create_group(conn, GroupName, user : discord.user):
-    sql = ''' INSERT INTO ''' + GroupName + '''(''' + user +''')
-              Values(?) '''
-    db = r"C:\Users\samue\Desktop\KekNub\change.db"
-    conn = create_connection(db)
+def join_group(conn, GroupName, user):
+        
     cur = conn.cursor()
-    cur.execute(sql, GroupName)
-    conn.comit()
+    print ("before sql")
+    sql = "INSERT INTO " + GroupName + " VALUES " + "("+ user +")"
+    print("after sql")
+    print(sql)
+    cur.execute(sql)
+    print ("its working")
+    conn.commit()
+    for row in cur.execute('SELECT * FROM test2 ORDER BY name'):
+        print(row)
     return cur.lastrowid
