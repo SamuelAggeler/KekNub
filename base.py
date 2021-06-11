@@ -133,7 +133,7 @@ async def pfp(ctx, user: discord.Member):
 async def create(ctx, GroupName):
     conn = utility.create_connection(Groupdb)
     sql_create_Group_table = """ CREATE TABLE IF NOT EXISTS """ + GroupName + """ (
-                                        name text
+                                        id integer
                                         ); """
 
     if conn is not None:
@@ -147,14 +147,14 @@ async def create(ctx, GroupName):
 
 @bot.command()
 async def join(ctx, GroupName):
-    user = ctx.message.author
+    userpingable = ctx.message.author
+    user = ctx.message.author.id
     conn = utility.create_connection(Groupdb)
     with conn:
-        print("GroupName and user")
-        user_string = str(user)
-        print(user_string)
-        utility.join_group(conn, GroupName,user_string)
-    await ctx.channel.send(f" joined group " + GroupName + user.mention)
+        print("user")
+        print(user)
+        utility.join_group(conn, GroupName,user)
+    await ctx.channel.send(f" joined group " + GroupName + userpingable.mention)
 
 @bot.command()
 async def pingGroup(ctx, GroupName):
@@ -167,7 +167,10 @@ async def pingGroup(ctx, GroupName):
     rows = cur.fetchall()
     print("its working2")
     for user in rows:
-        print(user)
-        await ctx.channel.send(user)
+        userstring = str(user)
+        length = len(userstring)
+        userstring_formated = userstring[1:length-2]
+        pinable = "<@" + userstring_formated + ">"
+        await ctx.channel.send(pinable)
 
 bot.run(TOKEN)

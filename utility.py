@@ -46,13 +46,11 @@ def create_db(db_file):
 def join_group(conn, GroupName, user):
         
     cur = conn.cursor()
-    print ("before sql")
-    sql = "INSERT INTO " + GroupName + " VALUES " + "("+ user +")"
+    print ("before sql query")
+    sql = "INSERT INTO " + GroupName + "(id) VALUES " + "(" + str(user) + ")"
     print("after sql")
     print(sql)
     cur.execute(sql)
     print ("its working")
     conn.commit()
-    for row in cur.execute('SELECT * FROM test2 ORDER BY name'):
-        print(row)
     return cur.lastrowid
