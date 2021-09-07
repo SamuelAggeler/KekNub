@@ -51,7 +51,7 @@ extensions = ["cogs.utiliy",
               "cogs.voice",
               "cogs.admin",
               "cogs.events",
-              "cogs.listener"]
+              ]
 
 
 bot = commands.Bot(command_prefix=get_prefix, description= "testing my new bot")
