@@ -7,10 +7,11 @@ import sys
 import json
 import sqlite3
 from sqlite3 import Error
+from discord import client
+from discord import guild
 
 
 from discord.ext.commands.core import Group
-import utility
 from discord.flags import Intents
 
 from discord.utils import get
@@ -23,35 +24,63 @@ from dotenv import load_dotenv
 
 
 
-#load token, discord and intents 
+#load token, discord intents and db 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
-Groupdb = r"C:\Users\samue\Desktop\KekNub\Group.db"
+print(GUILD)
+
+
 
 
 Intents = discord.Intents.default()
 #initalize bot prefix
-bot = commands.Bot(command_prefix='?')
+
+
+
+#methode still in testing, returns a valid prefix for the bot
+def get_prefix(bot, message):
+    prefixes = ["?","!","help"]
+
+    if not message.guild:
+        return "?"
+
+    return commands.when_mentioned_or(*prefixes)(bot,message)
+
+extensions = ["cogs.utiliy",
+              "cogs.voice",
+              "cogs.admin",
+              "cogs.events",
+              "cogs.listener"]
+
+
+bot = commands.Bot(command_prefix=get_prefix, description= "testing my new bot")
+
+@bot.command()
+async def load(ctx, extension):
+    bot.load_extension(f"cogs.{extension}")
+
+@bot.command()
+async def unload(ctx, extension):
+    bot.unload_extension(f"cogs.{extension}")
+
+for filename in os.listdir("./cogs"):
+    if filename.endswith(".py"):
+        print(filename[:-3])
+        bot.load_extension(f"cogs.{filename[:-3]}")
 
 #helper message to see, when the bot is connected
+#also now displays watching you as status of the bot.
 @bot.event
 async def on_ready():
-    guild = discord.utils.get(bot.guilds, name=GUILD)
-    print(
-        f'{bot.user} is connected to the following guild:\n'
-        f'{guild.name}(id: {guild.id})'
-    )
-#restart command for the bot
-@bot.command()
-@commands.has_role(':)')
-async def restart(ctx):
-    await ctx.send("Bot will restart now")
-    bot.logout
-    bot.login
-    await ctx.send("Bot is back online")
+    await bot.change_presence(activity=discord.Activity(
+        type = discord.ActivityType.watching,
+        name = "you"
+    ))
+
  
-#takes arbitrary amount of arguments and returns a random one
+#takes arbitrary amount of arguments and retur
+# ns a random one
 @bot.command(name = 'random', help='takes input and returns random choice')
 async def random(ctx, *args):
     await ctx.send(rand.choice(args))
@@ -78,6 +107,11 @@ async def reaction(ctx):
     emoji = '👍'
     await ctx.send(message + emoji)
 
+@bot.command()
+async def pingpong(ctx):
+    await ctx.send("pong")
+
+
 @bot.command(help = "start a giveaway takes time in mins and then the prize as \na String")
 async def startgive(ctx, mins : int, *, prize: str):
     embed = discord.Embed(title = 'Giveaway', description = f"{prize}", color = ctx.author.color)
@@ -103,14 +137,10 @@ async def startgive(ctx, mins : int, *, prize: str):
     await ctx.send(f"Congratulation {winner.mention} won {prize}")
 
 
-#testreaction that puts a thumb under a message that contains thumbs
-@bot.listen('on_message')
-async def addingEmote(message):
-    if 'thumbs' in message.content.lower():
-        emoji = '👍'
-        await message.add_reaction(emoji)
 
-#pings user a certain amount of time with a custom message
+
+
+##pings user a certain amount of time with a custom message
 @bot.command(help = "takes a user, amount of pings and a message as argument")
 async def ping(ctx, user1 : discord.Member, amount : int, message):
     for i in range(0, amount):
@@ -126,51 +156,11 @@ async def pfp(ctx, user: discord.Member):
 
 
 
-
-
-
 @bot.command()
-async def create(ctx, GroupName):
-    conn = utility.create_connection(Groupdb)
-    sql_create_Group_table = """ CREATE TABLE IF NOT EXISTS """ + GroupName + """ (
-                                        id integer
-                                        ); """
+async def playsong(ctx, url : str):
+    voiceChannel = discord.utils.get(ctx.guild.voice_channels, name = "Allgemein")
+    voice = discord.utils.get(client.voice_clients, GUILD)
+    await channel.VoiceChannel.connect()
 
-    if conn is not None:
-        utility.create_table(conn, sql_create_Group_table)
-    else:
-        print("couldnt create Table with name " + GroupName)
-    
-    user = ctx.message.author
-    await ctx.channel.send(user.mention + f" You succesfully created the group " + GroupName)
-
-
-@bot.command()
-async def join(ctx, GroupName):
-    userpingable = ctx.message.author
-    user = ctx.message.author.id
-    conn = utility.create_connection(Groupdb)
-    with conn:
-        print("user")
-        print(user)
-        utility.join_group(conn, GroupName,user)
-    await ctx.channel.send(f" joined group " + GroupName + userpingable.mention)
-
-@bot.command()
-async def pingGroup(ctx, GroupName):
-    conn = utility.create_connection(Groupdb)
-    cur = conn.cursor()
-    sql = "SELECT * FROM " + GroupName
-    print(sql)
-    cur.execute(sql)
-    print("its working")
-    rows = cur.fetchall()
-    print("its working2")
-    for user in rows:
-        userstring = str(user)
-        length = len(userstring)
-        userstring_formated = userstring[1:length-2]
-        pingable = "<@" + userstring_formated + ">"
-        await ctx.channel.send(pingable)
 
 bot.run(TOKEN)
