@@ -39,7 +39,14 @@ class admin(commands.Cog):
                 await ctx.send(f" Unbanned{user.mention}")
                 return
 
-    
+    @commands.command()
+    @commands.has_role(':)')
+    async def create_channel(ctx,channel_name):
+        guild = ctx.guild
+        existing_channel = discord.utils.get(guild.channels, name=channel_name)
+        if not existing_channel:
+            print(f'Creating a new channel: {channel_name}')
+            await guild.create_text_channel(channel_name)       
 
 def setup(bot):
     bot.add_cog(admin(bot))

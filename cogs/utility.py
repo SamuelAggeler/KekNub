@@ -65,6 +65,21 @@ class utility(commands.Cog):
             pingable = "<@" + userstring_formated + ">"
             await ctx.channel.send(pingable)
 
+
+    @commands.command()
+    async def pfp(ctx, user: discord.Member):
+        pfp = user.avatar_url
+        embed = discord.Embed(title="Profilepicture ", description = "{}, current profilepicture".format(user.mention), color=ctx.author.color)
+        embed.set_image(url=(pfp))
+        await ctx.send(embed=embed)
+
+    @commands.command(help = "takes a user, amount of pings and a message as argument")
+    async def ping(ctx, user1 : discord.Member, amount : int, message):
+        for i in range(0, amount):
+            await ctx.send(message + user1.mention)
+
+
+
     @commands.Cog.listener()
     async def on_ready(self):
         print('utility is ready')
@@ -124,5 +139,3 @@ def join_group(conn, GroupName, user):
     print ("its working")
     conn.commit()
     return cur.lastrowid
-
-#help

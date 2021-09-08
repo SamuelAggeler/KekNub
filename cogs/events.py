@@ -33,6 +33,11 @@ class events(commands.Cog):
             await ctx.send("Please pass in all requiered arguments")
         if isinstance(error, commands.CommandNotFound):
             await ctx.send("This command doesn't exist")
+        if isinstance(error, commands.errors.CheckFailure):
+            await ctx.send('You do not have the correct role for this command.')
+
+
+
 
 def setup(bot):
     bot.add_cog(events(bot))
