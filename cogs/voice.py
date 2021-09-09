@@ -38,7 +38,6 @@ class voice(commands.Cog):
             await ctx.send("this aint a voicechannel you fcking donkey")
         else:
             voice_Channel = discord.utils.get(ctx.guild.voice_channels, name = channel)
-            print(voice_Channel)
             voice_client = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
 
         if channel is None:
