@@ -18,11 +18,10 @@ class utility(commands.Cog):
 
     @commands.command()
     async def clear(self, ctx, amount=5):
-        print("test")
         await ctx.channel.purge(limit = amount)
 
     @commands.command()
-    async def create(ctx, GroupName):
+    async def create(self,ctx, GroupName):
         conn = utility.create_connection(Groupdb)
         sql_create_Group_table = """ CREATE TABLE IF NOT EXISTS """ + GroupName + """ (
                                         id integer
@@ -38,7 +37,7 @@ class utility(commands.Cog):
 
 
     @commands.command()
-    async def join(ctx, GroupName):
+    async def join(self,ctx, GroupName):
         userpingable = ctx.message.author
         user = ctx.message.author.id
         conn = utility.create_connection(Groupdb)
@@ -49,7 +48,7 @@ class utility(commands.Cog):
         await ctx.channel.send(f" joined group " + GroupName + userpingable.mention)
 
     @commands.command()
-    async def pingGroup(ctx, GroupName):
+    async def pingGroup(self,ctx, GroupName):
         conn = utility.create_connection(Groupdb)
         cur = conn.cursor()
         sql = "SELECT * FROM " + GroupName
@@ -67,16 +66,16 @@ class utility(commands.Cog):
 
 
     @commands.command()
-    async def pfp(ctx, user: discord.Member):
+    async def pfp(self,ctx, user: discord.Member):
         pfp = user.avatar_url
         embed = discord.Embed(title="Profilepicture ", description = "{}, current profilepicture".format(user.mention), color=ctx.author.color)
         embed.set_image(url=(pfp))
         await ctx.send(embed=embed)
 
     @commands.command(help = "takes a user, amount of pings and a message as argument")
-    async def ping(ctx, user1 : discord.Member, amount : int, message):
+    async def ping(self,ctx, pinguser : discord.Member, amount : int, message):
         for i in range(0, amount):
-            await ctx.send(message + user1.mention)
+            await ctx.send(message + pinguser.mention)
 
 
 

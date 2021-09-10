@@ -32,20 +32,22 @@ class voice(commands.Cog):
 
     @commands.command()
     async def joinchannel(self, ctx, channel : str):
-
-        channel = ctx.message.author.voice.channel
         if discord.utils.get(ctx.guild.voice_channels, name = channel) is None:
             await ctx.send("this aint a voicechannel you fcking donkey")
         else:
+            print("got here")
             voice_Channel = discord.utils.get(ctx.guild.voice_channels, name = channel)
             voice_client = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
 
-        if channel is None:
-            await voice_Channel.connect()
-        else:
-            await channel.connect()
         
-
+            await voice_Channel.connect()
+         
+    @commands.command()
+    async def leavechannel(self, ctx):
+        if(ctx.voice_client):
+            await ctx.guild.voice_client.disconnect()
+        else:
+            await ctx.send("I'm not in a voicechannel")
 
 
 def setup(bot):
