@@ -6,6 +6,12 @@ class admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+
+    
+    @commands.Cog.listener()
+    async def on_ready(self):
+        print('admin is ready')
+
     @commands.command()
     @commands.has_role(':)')
     async def logout(self, ctx):

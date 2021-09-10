@@ -1,23 +1,12 @@
 from discord import member, voice_client
 from discord.ext.commands.bot import Bot
 import youtube_dl
-import asyncio
-
 import os
 import discord
-import datetime
-from discord import client
-from discord import guild
-
-from discord.ext.commands.core import Group
-from discord.flags import Intents
-
 from discord.utils import get
 from discord import utils
-from discord import channel
 from discord.ext import commands
-from discord.abc import GuildChannel
-from discord.user import ClientUser
+
 
 
 
@@ -50,28 +39,55 @@ class voice(commands.Cog):
             await ctx.send("I'm not in a voicechannel")
 
 
+    @commands.command()
+    async def playsong(self, ctx, url : str):
+        songcheck = os.path.isfile("song.mp3")
+        try:
+            if songcheck:
+                os.remove("song.mp3")
+        except PermissionError:
+            await ctx.send("wait")
+            return
+        voice_Channel = discord.utils.get(ctx.guild.voice_channels, name = "Allgemein")
+        await voice_Channel.connect()
+        voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
+
+        ydl_opts = {
+        'format': 'bestaudio/best',
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],
+        }
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+        for file in os.listdir("./"):
+            if file.endswith(".mp3"):
+                os.rename(file, "song.mp3")
+        voice.play(discord.FFmpegPCMAudio("song.mp3"))
+
+        
+        await voice_Channel.connect()
+
+    @commands.command()
+    async def pause(self, ctx):
+        voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
+        if voice.is_playing():
+            voice.pause()
+        else:
+            await ctx.send("Currently no audio is playing.")
+ 
+    @commands.command()
+    async def resume(self, ctx):
+        voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
+        if voice.is_paused():
+            voice.resume()
+        else:
+            await ctx.send("The audio is not paused.")
+
+
 def setup(bot):
     bot.add_cog(voice(bot))
 
-
-ytdl_format_options = {
-    'format': 'bestaudio/best',
-    'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
-    'restrictfilenames': True,
-    'noplaylist': True,
-    'nocheckcertificate': True,
-    'ignoreerrors': False,
-    'logtostderr': False,
-    'quiet': True,
-    'no_warnings': True,
-    'default_search': 'auto',
-    'source_address': '0.0.0.0'
-}
-
-ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
-
-
-
-def endSong(guild, path):
-    os.remove(path) 
 

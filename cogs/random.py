@@ -6,6 +6,13 @@ class random(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+
+
+
+    
+    @commands.Cog.listener()
+    async def on_ready(self):
+        print('random is ready')
         
 
     @commands.command(name = 'random', help='takes input and returns random choice')
